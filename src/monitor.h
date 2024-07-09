@@ -39,6 +39,7 @@ int php_sandbox_monitor_lock(php_sandbox_monitor_t *m);
 uint32_t php_sandbox_monitor_check(php_sandbox_monitor_t *m, uint32_t state);
 int php_sandbox_monitor_unlock(php_sandbox_monitor_t *m);
 uint32_t php_sandbox_monitor_wait(php_sandbox_monitor_t *m, uint32_t state);
+uint32_t php_sandbox_monitor_waittimed(php_sandbox_monitor_t *m, uint32_t state, int seconds);
 void php_sandbox_monitor_set(php_sandbox_monitor_t *m, uint32_t state);
 void php_sandbox_monitor_unset(php_sandbox_monitor_t *m, uint32_t state);
 void php_sandbox_monitor_destroy(php_sandbox_monitor_t *);
