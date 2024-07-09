@@ -82,6 +82,44 @@ uint32_t php_sandbox_monitor_wait(php_sandbox_monitor_t *monitor, uint32_t state
 	return changed;
 }
 
+uint32_t php_sandbox_monitor_waittimed(php_sandbox_monitor_t *monitor, uint32_t state, int seconds) {
+    uint32_t changed = FAILURE;
+    int      rc      = SUCCESS;
+
+    if (pthread_mutex_lock(&monitor->mutex) != SUCCESS) {
+        return FAILURE;
+    }
+
+    struct timespec max_wait = {0, 0};
+    const int gettime_rv = clock_gettime(CLOCK_REALTIME, &max_wait);
+    max_wait.tv_sec += seconds;
+
+    while (!(changed = (monitor->state & state))) {
+
+        if ((rc = pthread_cond_timedwait(
+                &monitor->condition, &monitor->mutex, &max_wait)) != SUCCESS) {
+            pthread_mutex_unlock(&monitor->mutex);
+
+            return FAILURE;
+        }
+
+        if (monitor->state & (PHP_SANDBOX_DONE|PHP_SANDBOX_CLOSE)) {
+            changed = FAILURE;
+            pthread_mutex_unlock(&monitor->mutex);
+
+            return changed;
+        }
+    }
+
+    monitor->state ^= changed;
+
+    if (pthread_mutex_unlock(&monitor->mutex) != SUCCESS) {
+        return FAILURE;
+    }
+
+    return changed;
+}
+
 void php_sandbox_monitor_set(php_sandbox_monitor_t *monitor, uint32_t state) {
 	monitor->state |= state;
 
