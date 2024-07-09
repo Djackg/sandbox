@@ -30,6 +30,7 @@
 #include "zend_extensions.h"
 
 #include "ext/standard/dl.h"
+#include <unistd.h>
 
 #define php_sandbox_exception(m, ...) zend_throw_exception_ex(php_sandbox_exception_ce, 0, m, ##__VA_ARGS__)
 
@@ -116,7 +117,7 @@ PHP_METHOD(Sandbox, enter)
 	php_sandbox_monitor_set(sandbox->monitor, PHP_SANDBOX_EXEC);
 	php_sandbox_monitor_unlock(sandbox->monitor);
 
-	php_sandbox_monitor_wait(sandbox->monitor, PHP_SANDBOX_WAKE);
+	php_sandbox_monitor_waittimed(sandbox->monitor, PHP_SANDBOX_WAKE, 3600);
 
 	if (php_sandbox_monitor_check(sandbox->monitor, PHP_SANDBOX_ERROR)) {
 		php_sandbox_exception(
@@ -372,7 +373,7 @@ void* php_sandbox_routine(void *arg) {
 
 	PG(during_request_startup)  = 0;
 	SG(sapi_started)            = 0;
-	SG(headers_sent)            = 1;
+	SG(headers_sent)            = 0;
 	SG(request_info).no_headers = 1;
 
 	if (!Z_ISUNDEF(sandbox->configuration)) {
