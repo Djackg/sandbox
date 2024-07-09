@@ -18,6 +18,7 @@
 #ifndef HAVE_SANDBOX_SANDBOX_H
 #define HAVE_SANDBOX_SANDBOX_H
 
+#include <sys/types.h>
 #include "php.h"
 #include "monitor.h"
 
