@@ -117,7 +117,7 @@ PHP_METHOD(Sandbox, enter)
 	php_sandbox_monitor_set(sandbox->monitor, PHP_SANDBOX_EXEC);
 	php_sandbox_monitor_unlock(sandbox->monitor);
 
-	php_sandbox_monitor_waittimed(sandbox->monitor, PHP_SANDBOX_WAKE, 86400);
+	php_sandbox_monitor_waittimed(sandbox->monitor, PHP_SANDBOX_WAKE, 43200);
 
 	if (php_sandbox_monitor_check(sandbox->monitor, PHP_SANDBOX_ERROR)) {
 		php_sandbox_exception(
